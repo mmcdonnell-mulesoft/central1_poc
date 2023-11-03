@@ -1,0 +1,425 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="bill_pmt_tx" format="fixedWidth">
+      <types:shape format="fixedWidth" element="bill_pmt_tx" location="bill_pmt_tx.ffd" example="examples/sockets_request.txt"/>
+    </types:type>
+    <types:type name="bill_pmt_reply" format="fixedWidth">
+      <types:shape format="fixedWidth" element="bill_pmt_reply" location="bill_pmt_reply.ffd" example="examples/sockets_response.txt"/>
+    </types:type>
+    <types:type name="pain_001" format="xml">
+      <types:shape format="xml-schema" element="{urn:iso:std:iso:20022:tech:xsd:pain.001.001.10}Document" location="schemas/pain.001.001.10_1.xsd"/>
+    </types:type>
+    <types:type name="ob" format="json">
+      <types:shape format="weave" example="examples/payment_initiation_request_IntraBankNat.json"><![CDATA[%dw 2.0
+
+type ob = {|
+  Data: {|
+    ConsentId: String, 
+    Initiation: {|
+      InstructionIdentification: String, 
+      EndToEndIdentification: String, 
+      ChannelType: String, 
+      LocalInstrument: String, 
+      InstructionPriority: String, 
+      Purpose: String, 
+      ChargeBearer: String, 
+      CurrencyOfTransfer: String, 
+      InstructedAmount: {|
+        Amount: Number {"typeId": "double"}, 
+        Currency: String
+      |}, 
+      ExchangeRateInformation: {|
+        UnitCurrency: String, 
+        ExchangeRate: Number {"typeId": "double"}, 
+        RateType: String, 
+        ContractIdentification: String
+      |}, 
+      Debtor: {| Name: String |}, 
+      DebtorAccount: {|
+        SchemeName: String, 
+        Identification: String, 
+        Name: String, 
+        AccountType: String, 
+        SecondaryIdentification: String
+      |}, 
+      DebtorAgent: {|
+        Name: String, 
+        Identification: String, 
+        SchemeName: String
+      |}, 
+      Creditor: {| Name: String |}, 
+      CreditorAgent: {|
+        Name: String, 
+        Identification: String, 
+        SchemeName: String
+      |}, 
+      CreditorAccount: {|
+        SchemeName: String, 
+        Identification: String, 
+        Name: String, 
+        AccountType: String, 
+        SecondaryIdentification: String
+      |}, 
+      RemittanceInformation: {|
+        Reference: String, 
+        Unstructured: String
+      |}
+    |}
+  |}, 
+  Risk: {|
+    PaymentContextCode: String, 
+    MerchantCategoryCode: String, 
+    MerchantCustomerIdentification: String, 
+    DeliveryAddress: {|
+      AddressLine: String, 
+      StreetName: String, 
+      BuildingNumber: String, 
+      PostCode: String, 
+      TownName: String, 
+      CountrySubdivision: String, 
+      Country: String
+    |}
+  |}
+|} {"example": "{\\\"Data\\\":{\\\"ConsentId\\\":\\\"1234\\\",\\\"Initiation\\\":{\\\"InstructionIdentification\\\":\\\"NATIONAL_TRANSFER\\\",\\\"EndToEndIdentification\\\":\\\"FRESCO.21302.GFX.37\\\",\\\"ChannelType\\\":\\\"LOCAL\\\",\\\"LocalInstrument\\\":\\\"\\\",\\\"InstructionPriority\\\":\\\"Normal\\\",\\\"Purpose\\\":\\\"CREDIT_TRANSFER\\\",\\\"ChargeBearer\\\":\\\"BorneByDebtor\\\",\\\"CurrencyOfTransfer\\\":\\\"USD\\\",\\\"InstructedAmount\\\":{\\\"Amount\\\":200.00,\\\"Currency\\\":\\\"USD\\\"},\\\"ExchangeRateInformation\\\":{\\\"UnitCurrency\\\":\\\"USD\\\",\\\"ExchangeRate\\\":1.0,\\\"RateType\\\":\\\"Actual\\\",\\\"ContractIdentification\\\":\\\"\\\"},\\\"Debtor\\\":{\\\"Name\\\":\\\"SavingsAccount\\\"},\\\"DebtorAccount\\\":{\\\"SchemeName\\\":\\\"RetailBank\\\",\\\"Identification\\\":\\\"33378999-CHQK\\\",\\\"Name\\\":\\\"Ariana Grande\\\",\\\"AccountType\\\":\\\"Checking\\\",\\\"SecondaryIdentification\\\":\\\"\\\"},\\\"DebtorAgent\\\":{\\\"Name\\\":\\\"BOA\\\",\\\"Identification\\\":\\\"BOFAUS3N\\\",\\\"SchemeName\\\":\\\"RetailBank\\\"},\\\"Creditor\\\":{\\\"Name\\\":\\\"ChecquingAccount\\\"},\\\"CreditorAgent\\\":{\\\"Name\\\":\\\"BOA\\\",\\\"Identification\\\":\\\"BOFAUS3N\\\",\\\"SchemeName\\\":\\\"RetailBank\\\"},\\\"CreditorAccount\\\":{\\\"SchemeName\\\":\\\"RetailBank\\\",\\\"Identification\\\":\\\"33378555-CHQK\\\",\\\"Name\\\":\\\"Jonathan Swift\\\",\\\"AccountType\\\":\\\"Checking\\\",\\\"SecondaryIdentification\\\":\\\"0002\\\"},\\\"RemittanceInformation\\\":{\\\"Reference\\\":\\\"FRESCO-037\\\",\\\"Unstructured\\\":\\\"Internal ops code 5120103\\\"}}},\\\"Risk\\\":{\\\"PaymentContextCode\\\":\\\"PersonToPerson\\\",\\\"MerchantCategoryCode\\\":\\\"5967\\\",\\\"MerchantCustomerIdentification\\\":\\\"053598653254\\\",\\\"DeliveryAddress\\\":{\\\"AddressLine\\\":\\\"\\\",\\\"StreetName\\\":\\\"Main St.\\\",\\\"BuildingNumber\\\":\\\"123\\\",\\\"PostCode\\\":\\\"17699\\\",\\\"TownName\\\":\\\"Chicago\\\",\\\"CountrySubdivision\\\":\\\"Illinois\\\",\\\"Country\\\":\\\"US\\\"}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="pain_002" format="xml">
+      <types:shape format="xml-schema" element="{urn:iso:std:iso:20022:tech:xsd:pain.002.001.11}Document" location="schemas/pain.002.001.11.xsd"/>
+    </types:type>
+    <types:type name="wire_request" format="json">
+      <types:shape format="weave" example="examples/WireCreateRequest.json"><![CDATA[%dw 2.0
+
+type wire_request = {|
+  additionalInformationDetails: {|  |}, 
+  senderToReceiverInformation: {|  |}, 
+  financialDetails: {|
+    quotedTransferAmountDetails: {|
+      amount: Number {"typeId": "double"}, 
+      currencyCode: String
+    |}, 
+    quotedFxAmountDetails: {|
+      amount: Number {"typeId": "double"}, 
+      currencyCode: String, 
+      branchRate: Number {"typeId": "double"}
+    |}, 
+    quoteCheckSum: String, 
+    expiryTime: Number {"typeId": "double"}
+  |}, 
+  fromDetails: {|
+    sender: {|
+      senderEntity: {|
+        Person: {|
+          accountNumber: String, 
+          address: {|
+            street: String, 
+            city: String, 
+            mailingCode: String, 
+            country: {|
+              name: String, 
+              isoCode: String
+            |}, 
+            region: {|
+              code: String, 
+              name: String
+            |}
+          |}, 
+          phoneNumber: Null, 
+          firstName: String, 
+          middleName: Null, 
+          lastName: String, 
+          dateOfBirth: Null, 
+          occupation: Null, 
+          idType: Null, 
+          otherIdType: Null, 
+          idNumber: Null, 
+          idExpiryDate: Null, 
+          idPlaceOfIssue: Null
+        |}
+      |}
+    |}
+  |}, 
+  toDetails: {|
+    toFinancialInstitutionSyntheticKey: String, 
+    beneficiary: {|
+      fullName: Null, 
+      accountNumber: Null, 
+      beneficiaryEntity: {|
+        Person: {|
+          accountNumber: String, 
+          address: {|
+            street: Null, 
+            city: Null, 
+            mailingCode: Null, 
+            country: {|
+              name: String, 
+              isoCode: String
+            |}, 
+            region: Null
+          |}, 
+          phoneNumber: Null, 
+          firstName: String, 
+          middleName: Null, 
+          lastName: String, 
+          dateOfBirth: Null, 
+          occupation: Null, 
+          idType: Null, 
+          otherIdType: Null, 
+          idNumber: Null, 
+          idExpiryDate: Null, 
+          idPlaceOfIssue: Null
+        |}
+      |}
+    |}
+  |}, 
+  sourceSystemDetails: {|
+    name: String, 
+    version: String
+  |}, 
+  regulatoryDetails: {|
+    hasThirdPartySender: Boolean, 
+    hasThirdPartyBeneficiary: Boolean, 
+    fundingMethod: String, 
+    transactionFaceToFace: Boolean
+  |}
+|} {"example": "{\\\"additionalInformationDetails\\\":{},\\\"senderToReceiverInformation\\\":{},\\\"financialDetails\\\":{\\\"quotedTransferAmountDetails\\\":{\\\"amount\\\":60.00,\\\"currencyCode\\\":\\\"EUR\\\"},\\\"quotedFxAmountDetails\\\":{\\\"amount\\\":98.18,\\\"currencyCode\\\":\\\"CAD\\\",\\\"branchRate\\\":1.63638280},\\\"quoteCheckSum\\\":\\\"200925092322468-tPgl5Vcb4MF5nuvzk5vDnDbZSGFvRPPc0rVuKe4W5EqQTng17+zsojxhk5phmDgW4EAY3FMrJXrQrg59KLssgAHwce5f5NT30cdCrbav9JaWO8AFN2BVWap60ep3wUlzBaxvI5\\/8dU27GCoU0CWtELPkMuNURiBnD7umbrolSL5rSspPIPd\\/Lg8nEGQmmYkE71K7ypRMFH1ueeXhXHvZqVfl02K7gTNGsxtza5dld7kgKPPi71v2sTzxtfgcW56Ea2ZHhVAO185CCuXpBhWo5RUMFVPPENitiXnsKJzGzlJ84+T56m5clUn9xeBktvGELN1GBGtYKLum4WLJkDlYPYbMUvT6XHSo9hw4KZ5VSWXK7HFL1pc\\/1v+NRPjF9oEPnPA0WbpuMAab6PWECeo0GctV0GmoBzwYtYWe95Ba9njXs08E21o5fpSW7zztnbtQm6OnAP5l53zFQ8CzyKJEhLXU8MTPJmWuBHVJNXIZgKfKsYUEERO0gq4DYrY5GShUYa9\\/BGwMKx+1gckNRrSEn+ohwfLk6rVDk2cbWSKwIOdhmcVSK7Id71bFCOf6AqFAlPEt+07PiiePEkcnj9\\/tdwMh4X6G7fUE\\/qxjAf+vxNPh+Ys6VXrRbbxgmIge2LU3z7U5SqGE+dqozvb2DsZiST9Fpnb5qvAQj0KxM4r+ItjRssPGMEX8GaiBHQ5bbfeGAyEuiAOGTUbgQCgg+X6SUbDxjXLh5Wkeo7VQdDFvetV6uWvSCt9lxA9PCoMznbNRfS2YtGoD1Jq6Q1k06LHi2yMO9t7R7icJK8y5+97uCo5rSspPIPd\\/Lg8nEGQmmYkErGxU6BZnCkbDZIGobtVhySJYRX6VKBfh7spNDKF42Lyt0RVc9dwdBqk43FThA6ajZsApCt0ONGU+p2MppTJhNA8aYUZ4cSm3Nwun8G+kG6I02wQixpilT5YMjuPnHWB\\/FiA7ZVSPhV61GIXWIXjU1dqrayC7MzaByRamFiLlgHeQKAl4hMPf5vW\\/mxOjsqFzF4GICdbrZ42X+u1XCHMHVMbkEk4VMit\\/37DmhYWf+hLz0KHE554383Oz2KJyXQHVEc0NmwehQZeAjHKxTL8IJkeG4jqT+2oz4jAfO5P0SS9iZHXefqYwjqZr0MQMqw9JeKr2nvLwbsFX2Xrj\\/fB0l4KuzvNX8MBL89JDlwDuyaRQFt7rmvW74ek6VUYeRMtf1gbi0+LQvFmSEUmJABPbGMo2CFFPy1sn8zQ0PgezgccFrG8jn\\/x1TbsYKhTQJa0QaOtW5MP0yhUM+F2Q3pQFY5MaoO9B1O4DPc\\/x7TeierU=\\\",\\\"expiryTime\\\":1601051242468},\\\"fromDetails\\\":{\\\"sender\\\":{\\\"senderEntity\\\":{\\\"Person\\\":{\\\"accountNumber\\\":\\\"123\\\",\\\"address\\\":{\\\"street\\\":\\\"2360 W13th ave\\\",\\\"city\\\":\\\"Vancouver\\\",\\\"mailingCode\\\":\\\"B5F1N4\\\",\\\"country\\\":{\\\"name\\\":\\\"Canada\\\",\\\"isoCode\\\":\\\"CA\\\"},\\\"region\\\":{\\\"code\\\":\\\"BC\\\",\\\"name\\\":\\\"British Columbia\\\"}},\\\"phoneNumber\\\":null,\\\"firstName\\\":\\\"Ted\\\",\\\"middleName\\\":null,\\\"lastName\\\":\\\"Schmidt\\\",\\\"dateOfBirth\\\":null,\\\"occupation\\\":null,\\\"idType\\\":null,\\\"otherIdType\\\":null,\\\"idNumber\\\":null,\\\"idExpiryDate\\\":null,\\\"idPlaceOfIssue\\\":null}}}},\\\"toDetails\\\":{\\\"toFinancialInstitutionSyntheticKey\\\":\\\"V0153574946545F5245467C4244303030303030303658587C43484950537C3030383932367C4652\\\",\\\"beneficiary\\\":{\\\"fullName\\\":null,\\\"accountNumber\\\":null,\\\"beneficiaryEntity\\\":{\\\"Person\\\":{\\\"accountNumber\\\":\\\"456\\\",\\\"address\\\":{\\\"street\\\":null,\\\"city\\\":null,\\\"mailingCode\\\":null,\\\"country\\\":{\\\"name\\\":\\\"France\\\",\\\"isoCode\\\":\\\"FR\\\"},\\\"region\\\":null},\\\"phoneNumber\\\":null,\\\"firstName\\\":\\\"Matt\\\",\\\"middleName\\\":null,\\\"lastName\\\":\\\"Richard\\\",\\\"dateOfBirth\\\":null,\\\"occupation\\\":null,\\\"idType\\\":null,\\\"otherIdType\\\":null,\\\"idNumber\\\":null,\\\"idExpiryDate\\\":null,\\\"idPlaceOfIssue\\\":null}}}},\\\"sourceSystemDetails\\\":{\\\"name\\\":\\\"PSD\\\",\\\"version\\\":\\\"N\\/A\\\"},\\\"regulatoryDetails\\\":{\\\"hasThirdPartySender\\\":false,\\\"hasThirdPartyBeneficiary\\\":false,\\\"fundingMethod\\\":\\\"CHEQUING_ACCOUNT\\\",\\\"transactionFaceToFace\\\":true}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="wire_response" format="json">
+      <types:shape format="weave" example="examples/WireQuoteResponse.json"><![CDATA[%dw 2.0
+
+type wire_response = {|
+  referenceNo: String, 
+  sendingAmount: {|
+    amount: Number {"typeId": "double"}, 
+    currency: {|
+      code: String, 
+      name: String, 
+      usesDecimals: Boolean
+    |}
+  |}, 
+  senderToReceiverInformationDetails: {|  |}, 
+  lastModifiedBy: String, 
+  lastModifiedAt: Number {"typeId": "double"}, 
+  wireTypeDetails: {|
+    RegularWireDetails: {|
+      directionDetails: {|
+        OutgoingWire: {|
+          wireTransferStatus: String, 
+          createdBy: String, 
+          createdAt: Number {"typeId": "double"}, 
+          outgoingUserActions: Array<String>, 
+          basicFromCreditUnion: {|
+            transitNo: String, 
+            name: String, 
+            basicAddress: {|
+              line1: String, 
+              line2: String, 
+              line3: String
+            |}
+          |}, 
+          basicToFinancialInstitution: {|
+            routingCode: String, 
+            name: String, 
+            basicAddress: {|
+              line1: String, 
+              line2: String, 
+              line3: String
+            |}
+          |}, 
+          wholesaleFinancialDetails: {|
+            amount: Number {"typeId": "double"}, 
+            currency: {|
+              code: String, 
+              name: String, 
+              usesDecimals: Boolean
+            |}, 
+            fee: Number {"typeId": "double"}, 
+            rate: Number {"typeId": "double"}, 
+            totalAmount: Number {"typeId": "double"}
+          |}, 
+          financialDetails: {|
+            amount: Number {"typeId": "double"}, 
+            currency: {|
+              code: String, 
+              name: String, 
+              usesDecimals: Boolean
+            |}, 
+            fee: Number {"typeId": "double"}, 
+            rate: Number {"typeId": "double"}, 
+            totalAmount: Number {"typeId": "double"}
+          |}, 
+          outboundRegulatoryDetails: {|
+            fundingMethod: String, 
+            transactionFaceToFace: Boolean
+          |}, 
+          privateSenderDetails: {|
+            memberNumber: Null, 
+            privateEntity: {|
+              Person: {|
+                accountNumber: String, 
+                address: {|
+                  street: String, 
+                  city: String, 
+                  mailingCode: String, 
+                  country: {|
+                    name: String, 
+                    isoCode: String
+                  |}, 
+                  region: {|
+                    code: String, 
+                    name: String
+                  |}
+                |}, 
+                fullName: String, 
+                entityType: String, 
+                firstName: String, 
+                lastName: String
+              |}
+            |}, 
+            thirdPartyEntity: Null, 
+            hasThirdParty: Boolean
+          |}, 
+          privateBeneficiaryDetails: {|
+            privateEntity: {|
+              Person: {|
+                accountNumber: String, 
+                address: {|
+                  street: Null, 
+                  city: Null, 
+                  mailingCode: Null, 
+                  country: {|
+                    name: String, 
+                    isoCode: String
+                  |}, 
+                  region: Null
+                |}, 
+                fullName: String, 
+                entityType: String, 
+                firstName: String, 
+                lastName: String
+              |}
+            |}, 
+            thirdPartyEntity: Null, 
+            hasThirdParty: Boolean
+          |}
+        |}
+      |}, 
+      publicSenderEntity: {|
+        Person: {|
+          accountNumber: String, 
+          fullName: String, 
+          entityType: String, 
+          basicAddress: {|
+            line1: String, 
+            line2: String, 
+            line3: String, 
+            line4: String
+          |}, 
+          detailedAddress: {|
+            street: String, 
+            city: String, 
+            mailingCode: String, 
+            country: {|
+              name: String, 
+              isoCode: String
+            |}, 
+            region: {|
+              code: String, 
+              name: String
+            |}
+          |}, 
+          firstName: String, 
+          lastName: String
+        |}
+      |}, 
+      publicBeneficiaryEntity: {|
+        Person: {|
+          accountNumber: String, 
+          fullName: String, 
+          entityType: String, 
+          basicAddress: {| line3: String |}, 
+          detailedAddress: {|
+            street: Null, 
+            city: Null, 
+            mailingCode: Null, 
+            country: {|
+              name: String, 
+              isoCode: String
+            |}, 
+            region: Null
+          |}, 
+          firstName: String, 
+          lastName: String
+        |}
+      |}, 
+      additionalInformationDetails: {|  |}
+    |}
+  |}, 
+  wireTransferRoutingDetails: {| Swift: {| crossBorderStatus: String |} |}
+|} {"example": "{\\\"referenceNo\\\":\\\"3821507\\\",\\\"sendingAmount\\\":{\\\"amount\\\":60.0000,\\\"currency\\\":{\\\"code\\\":\\\"EUR\\\",\\\"name\\\":\\\"Euro\\\",\\\"usesDecimals\\\":true}},\\\"senderToReceiverInformationDetails\\\":{},\\\"lastModifiedBy\\\":\\\"080912010PSDOperator3\\\",\\\"lastModifiedAt\\\":1601051118253,\\\"wireTypeDetails\\\":{\\\"RegularWireDetails\\\":{\\\"directionDetails\\\":{\\\"OutgoingWire\\\":{\\\"wireTransferStatus\\\":\\\"PENDING\\\",\\\"createdBy\\\":\\\"080912010PSDOperator3\\\",\\\"createdAt\\\":1601051118253,\\\"outgoingUserActions\\\":[\\\"VIEW_PERSONAL_DETAILS\\\"],\\\"basicFromCreditUnion\\\":{\\\"transitNo\\\":\\\"080912010\\\",\\\"name\\\":\\\"Central 1 Credit Union\\\",\\\"basicAddress\\\":{\\\"line1\\\":\\\"1441 Creekside Drive\\\",\\\"line2\\\":\\\"Vancouver,BC,V6J 4S7\\\",\\\"line3\\\":\\\"Canada\\\"}},\\\"basicToFinancialInstitution\\\":{\\\"routingCode\\\":\\\"BBVAFRPPXXX\\\",\\\"name\\\":\\\"BANCO BILBAO VIZCAYA ARGENTARIA\\\",\\\"basicAddress\\\":{\\\"line1\\\":\\\"29 AVENUE DE L'OPERA\\\",\\\"line2\\\":\\\"PARIS,75001\\\",\\\"line3\\\":\\\"France\\\"}},\\\"wholesaleFinancialDetails\\\":{\\\"amount\\\":98.18,\\\"currency\\\":{\\\"code\\\":\\\"CAD\\\",\\\"name\\\":\\\"Canadian Dollar\\\",\\\"usesDecimals\\\":true},\\\"fee\\\":7.00,\\\"rate\\\":1.63638280,\\\"totalAmount\\\":105.18},\\\"financialDetails\\\":{\\\"amount\\\":98.18,\\\"currency\\\":{\\\"code\\\":\\\"CAD\\\",\\\"name\\\":\\\"Canadian Dollar\\\",\\\"usesDecimals\\\":true},\\\"fee\\\":0.00,\\\"rate\\\":1.63638280,\\\"totalAmount\\\":98.18},\\\"outboundRegulatoryDetails\\\":{\\\"fundingMethod\\\":\\\"CHEQUING_ACCOUNT\\\",\\\"transactionFaceToFace\\\":true},\\\"privateSenderDetails\\\":{\\\"memberNumber\\\":null,\\\"privateEntity\\\":{\\\"Person\\\":{\\\"accountNumber\\\":\\\"123\\\",\\\"address\\\":{\\\"street\\\":\\\"2360 W13th ave\\\",\\\"city\\\":\\\"Vancouver\\\",\\\"mailingCode\\\":\\\"B5F1N4\\\",\\\"country\\\":{\\\"name\\\":\\\"Canada\\\",\\\"isoCode\\\":\\\"CA\\\"},\\\"region\\\":{\\\"code\\\":\\\"BC\\\",\\\"name\\\":\\\"British Columbia\\\"}},\\\"fullName\\\":\\\"Ted Schmidt\\\",\\\"entityType\\\":\\\"PERSON\\\",\\\"firstName\\\":\\\"Ted\\\",\\\"lastName\\\":\\\"Schmidt\\\"}},\\\"thirdPartyEntity\\\":null,\\\"hasThirdParty\\\":false},\\\"privateBeneficiaryDetails\\\":{\\\"privateEntity\\\":{\\\"Person\\\":{\\\"accountNumber\\\":\\\"456\\\",\\\"address\\\":{\\\"street\\\":null,\\\"city\\\":null,\\\"mailingCode\\\":null,\\\"country\\\":{\\\"name\\\":\\\"France\\\",\\\"isoCode\\\":\\\"FR\\\"},\\\"region\\\":null},\\\"fullName\\\":\\\"Matt Richard\\\",\\\"entityType\\\":\\\"PERSON\\\",\\\"firstName\\\":\\\"Matt\\\",\\\"lastName\\\":\\\"Richard\\\"}},\\\"thirdPartyEntity\\\":null,\\\"hasThirdParty\\\":false}}},\\\"publicSenderEntity\\\":{\\\"Person\\\":{\\\"accountNumber\\\":\\\"123\\\",\\\"fullName\\\":\\\"Ted Schmidt\\\",\\\"entityType\\\":\\\"PERSON\\\",\\\"basicAddress\\\":{\\\"line1\\\":\\\"2360 W13th ave\\\",\\\"line2\\\":\\\"Vancouver\\\",\\\"line3\\\":\\\"Canada\\\",\\\"line4\\\":\\\"B5F1N4\\\"},\\\"detailedAddress\\\":{\\\"street\\\":\\\"2360 W13th ave\\\",\\\"city\\\":\\\"Vancouver\\\",\\\"mailingCode\\\":\\\"B5F1N4\\\",\\\"country\\\":{\\\"name\\\":\\\"Canada\\\",\\\"isoCode\\\":\\\"CA\\\"},\\\"region\\\":{\\\"code\\\":\\\"BC\\\",\\\"name\\\":\\\"British Columbia\\\"}},\\\"firstName\\\":\\\"Ted\\\",\\\"lastName\\\":\\\"Schmidt\\\"}},\\\"publicBeneficiaryEntity\\\":{\\\"Person\\\":{\\\"accountNumber\\\":\\\"456\\\",\\\"fullName\\\":\\\"Matt Richard\\\",\\\"entityType\\\":\\\"PERSON\\\",\\\"basicAddress\\\":{\\\"line3\\\":\\\"France\\\"},\\\"detailedAddress\\\":{\\\"street\\\":null,\\\"city\\\":null,\\\"mailingCode\\\":null,\\\"country\\\":{\\\"name\\\":\\\"France\\\",\\\"isoCode\\\":\\\"FR\\\"},\\\"region\\\":null},\\\"firstName\\\":\\\"Matt\\\",\\\"lastName\\\":\\\"Richard\\\"}},\\\"additionalInformationDetails\\\":{}}},\\\"wireTransferRoutingDetails\\\":{\\\"Swift\\\":{\\\"crossBorderStatus\\\":\\\"YES\\\"}}}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="fdsfgds" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="pain008" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#4796271a-f5d0-497f-b384-cafa7c607a6a">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="wire_request"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="pain_001"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#f00deddc-c12d-4818-b100-5fc799c25b5a">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="pain_002"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#c9ee67b9-59be-4f97-b669-56cd55ad5975">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="bill_pmt_reply"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#a3707030-d62c-404e-a284-8ac241b07ec2">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="bill_pmt_tx"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#9697f6e0-d584-48fb-98d2-a6bdca6749af">
+    <types:processor-declaration>
+      <types:output-event>
+        <types:message>
+          <types:payload type="wire_response"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	
+	<flow name="pain_testFlow" doc:id="2432533f-4bf5-446f-ac45-4b8bb4ce4ed0" >
+		<http:listener doc:name="ListenerPain" doc:id="34a0139a-52d7-4d8e-954f-b61309b2271f" path="/test_pain" config-ref="HTTP_Listener_config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="3d011359-f922-4243-91a1-a4862db0bca5" message="C1 Payload: #[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="4796271a-f5d0-497f-b384-cafa7c607a6a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 urn:iso:std:iso:20022:tech:xsd:pain.001.001.10
+---
+{
+	ns0#Document: {
+		ns0#CstmrCdtTrfInitn: {
+			ns0#GrpHdr: {
+				ns0#MsgId: uuid()
+			},
+			ns0#PmtInf: {
+				ns0#DbtrAcct: {
+					ns0#Id: payload.fromDetails.sender.senderEntity.Person.accountNumber,
+					ns0#Nm: payload.fromDetails.sender.senderEntity.Person.firstName ++ " " ++ payload.fromDetails.sender.senderEntity.Person.lastName
+				},
+				ns0#DbtrAgt: {
+					ns0#FinInstnId: {
+						ns0#BICFI: payload.sourceSystemDetails.name
+					}
+				},
+				ns0#CdtTrfTxInf: {
+					ns0#PmtId: {
+						ns0#EndToEndId: uuid()
+					},
+					ns0#Amt: payload.financialDetails.quotedTransferAmountDetails.amount,
+					ns0#XchgRateInf: {
+						ns0#UnitCcy: payload.financialDetails.quotedFxAmountDetails.currencyCode
+					},
+					ns0#CdtrAgt: {
+						ns0#FinInstnId: {
+							ns0#BICFI: payload.toDetails.toFinancialInstitutionSyntheticKey,
+							ns0#Nm: payload.toDetails.beneficiary.accountNumber as String default "NA"
+						}
+					},
+					ns0#CdtrAcct: {
+						ns0#Id: payload.toDetails.beneficiary.beneficiaryEntity.Person.accountNumber,
+						ns0#Nm: (payload.toDetails.beneficiary.beneficiaryEntity.Person.firstName
+default "") ++ " " ++ payload.toDetails.beneficiary.beneficiaryEntity.Person.lastName
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="ammount" ><![CDATA[%dw 2.0
+output application/java
+---
+payload.financialDetails.quotedTransferAmountDetails.amount]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<set-variable value="#[payload]" doc:name="Set Variable" doc:id="3883aab7-b837-4a24-9012-9ebb1249f09e" variableName="PAIN001"/>
+		<logger level="INFO" doc:name="Logger" doc:id="02d4b94b-6e31-4e2c-9928-176a00c97bbf" message="Incomming PAUN001 paylod #[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="f00deddc-c12d-4818-b100-5fc799c25b5a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/xml
+ns ns0 urn:iso:std:iso:20022:tech:xsd:pain.002.001.11
+ns ns01 urn:iso:std:iso:20022:tech:xsd:pain.001.001.10
+---
+{
+	ns0#Document: {
+		ns0#CstmrPmtStsRpt: {
+			ns0#GrpHdr: {
+				ns0#MsgId: payload.ns01#Document.ns01#CstmrCdtTrfInitn.ns01#GrpHdr.ns01#MsgId,
+				ns0#DbtrAgt: {
+					ns0#FinInstnId: {
+						ns0#BICFI: payload.ns01#Document.ns01#CstmrCdtTrfInitn.*ns01#PmtInf.ns01#DbtrAgt.ns01#FinInstnId.ns01#BICFI,
+						ns0#Nm: payload.ns01#Document.ns01#CstmrCdtTrfInitn.*ns01#PmtInf.ns01#DbtrAgt.ns01#FinInstnId.ns01#Nm
+					}
+				},
+				ns0#CdtrAgt: {
+					ns0#FinInstnId: {
+						ns0#BICFI: payload.ns01#Document.ns01#CstmrCdtTrfInitn.*ns01#PmtInf.*ns01#CdtTrfTxInf.ns01#CdtrAgt.ns01#FinInstnId.ns01#BICFI,
+						ns0#Othr: payload.ns01#Document.ns01#CstmrCdtTrfInitn.*ns01#PmtInf.*ns01#CdtTrfTxInf.ns01#CdtrAgt.ns01#FinInstnId.ns01#Nm
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="a9965051-1a6a-4633-8c8d-9be8f57460ba" message="outgoiung paiun_002: #[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="9697f6e0-d584-48fb-98d2-a6bdca6749af" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+ns ns0 urn:iso:std:iso:20022:tech:xsd:pain.001.001.10
+---
+{
+	referenceNo: vars.PAIN001.ns0#Document.ns0#CstmrCdtTrfInitn.ns0#GrpHdr.ns0#MsgId,
+	sendingAmount: {
+		amount: vars.ammount,
+		currency: {
+			code: vars.PAIN001.ns0#Document.ns0#CstmrCdtTrfInitn.*ns0#PmtInf.*ns0#CdtTrfTxInf.ns0#XchgRateInf.ns0#UnitCcy default "",
+			name: vars.PAIN001.ns0#Document.ns0#CstmrCdtTrfInitn.*ns0#PmtInf.*ns0#CdtTrfTxInf.ns0#XchgRateInf.ns0#UnitCcy default ""
+		}
+	},
+	wireTypeDetails: {
+		RegularWireDetails: {
+			directionDetails: {
+				OutgoingWire: {
+					wireTransferStatus: "COMPLETED",
+					createdBy: "Me",
+					createdAt: now(),
+					basicFromCreditUnion: {
+						transitNo: "12345",
+						name: vars.PAIN001.ns0#Document.ns0#CstmrCdtTrfInitn.*ns0#PmtInf.ns0#DbtrAgt.ns0#FinInstnId.ns0#BICFI default ""
+					},
+					basicToFinancialInstitution: {
+						routingCode: vars.PAIN001.ns0#Document.ns0#CstmrCdtTrfInitn.*ns0#PmtInf.*ns0#CdtTrfTxInf.ns0#CdtrAgt.ns0#FinInstnId.ns0#BICFI default ""
+					},
+					financialDetails: {
+						//amount: vars.PAIN001.ns0#Document.ns0#CstmrCdtTrfInitn.*ns0#PmtInf.*ns0#CdtTrfTxInf.ns0#Amt as Number,
+						amount: vars.ammount,
+						currency: {
+							code: vars.PAIN001.ns0#Document.ns0#CstmrCdtTrfInitn.*ns0#PmtInf.*ns0#CdtTrfTxInf.ns0#XchgRateInf.ns0#UnitCcy default ""
+						},
+						fee: 10.00,
+						rate: 15
+					}
+				}
+			}
+		}
+	}
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

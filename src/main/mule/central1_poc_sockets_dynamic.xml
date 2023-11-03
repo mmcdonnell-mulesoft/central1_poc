@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	
+	<sockets:request-config name="Sockets_Request_config1" doc:name="Sockets Request config" doc:id="3c23927c-32ac-4663-bf78-2900e9e089c7" >
+		<sockets:tcp-requester-connection host="localhost" port="10002" />
+	</sockets:request-config>
+	<sockets:listener-config name="Sockets_Listener_config1" doc:name="Sockets Listener config" doc:id="082acb72-4411-4f01-bba8-a0e4f79a4b9a" >
+		<sockets:tcp-listener-connection host="localhost" port="10002" />
+	</sockets:listener-config>
+	<flow name="central1_poc_socketsFlow_sender" doc:id="46b21a36-1a7f-48ab-bd1f-68d459ad5708" >
+		<file:listener doc:name="On New or Updated File" doc:id="2fba8706-7f19-4305-8443-cf5d24a0707e" config-ref="File_Config1" directory="/Users/bbaloi/AnypointStudio/studio-workspace-7.5-generic/central1_poc/src/main/resources/data_in" recursive="false" autoDelete="true" outputMimeType="text/flatfile; schemapath=bill_pmt_tx.ffd">
+			<scheduling-strategy >
+				<fixed-frequency />
+			</scheduling-strategy>
+		</file:listener>
+		<logger level="INFO" doc:name="Logger" doc:id="6f3d4a19-614a-488b-a29c-a1ef323bcd32" message="raw request data: #[payload]"/>
+		<ee:transform doc:name="Transform Message" doc:id="a3707030-d62c-404e-a284-8ac241b07ec2" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map()->{
+	phone_line: $.PHONE_LINE,
+	aquirer: $.AQUIRER,
+	message_type: $.MESSAGE_TYPE,
+	message_id: $.MESSAGE_ID,
+	member_number: $.MEMBER_NUMBER,
+	member_branch: $.MEMBER_BRANCH,
+	from_acct_type: $.FROM_ACCT_TYPE,
+	sub_acct: $.SUB_ACCOUT,
+	biller_num: $.BILLER_NUM,
+	transfer_ammt: $.TRANSFER_AMMT,
+	request_date: $.REQUEST_DATE,
+	acct: $.ACCOUNT,
+	effective_date: $.EFFECTIVE_DATE,
+	expiry_date: $.EXPIRY_DATE,
+	freq: $.FREQUENCY,
+	period: $.PERIOD,
+	last_name: $.LAST_NAME,
+	first_name: $.FIRST_NAME,
+	province_code: $.PROVINCE_CODE,
+	transit: $.TRANSIT,
+	filler: $.FILLER
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<sockets:send-and-receive doc:name="Send and receive" doc:id="a7378b8b-969a-4e9c-bbc3-0e1d3147e0df" config-ref="Sockets_Request_config1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="42e0aa4c-ea95-4c04-81c2-39f32013fe1b" message="RESPONSE: #[payload]"/>
+		<set-payload value="#[payload]" doc:name="Set Payload" doc:id="d0dd39cd-0e4b-45c7-ad23-9f209400729d" mimeType="text/flatfile; schemapath=bill_pmt_reply.ffd"/>
+		<ee:transform doc:name="Transform Message" doc:id="c9ee67b9-59be-4f97-b669-56cd55ad5975" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map()->{
+	phone_line: $.PHONE_LINE,
+	aquirer: $.AQUIRER,
+	message_type: $.MESSAGE_TYPE,
+	message_id: $.MESSAGE_ID,
+	response_Code: $.RESPONSE_CODE,
+	trace_num: $.TRACE_NUM,
+	province_code: $.PROVINCE_CODE,
+	transit: $.TRANSIT,
+	filler: $.FILLER
+	
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="69595465-dda3-4858-b12b-ba48c2f89791" message="GOT RESPONSE: #[payload]"/>
+	</flow>
+	<flow name="central1_poc_socketsFlow_receiver" doc:id="8569f10d-aa32-4270-9d30-aea1f617f76c" >
+		<sockets:listener doc:name="Listener" doc:id="9d15817c-a388-4337-ba3c-a93ea4ca8441" config-ref="Sockets_Listener_config1"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1f7514e5-eeca-4626-a493-085722570fce" message="REQUEST: #[payload]"/>
+		<file:write doc:name="Write" doc:id="c7175b51-006b-4559-b472-526974669f23" path="/Users/bbaloi/AnypointStudio/studio-workspace-7.5-generic/central1_poc/src/main/resources/data_out/sockets_out.txt"/>
+		<file:read doc:name="Read" doc:id="4297fb40-b240-48d3-b9a9-b7fa41524566" path="/Users/bbaloi/AnypointStudio/studio-workspace-7.5-generic/central1_poc/src/main/resources/examples/sockets_response.txt" outputMimeType="text/flatfile; schemapath=bill_pmt.reply.ffd"/>
+	</flow>
+</mule>

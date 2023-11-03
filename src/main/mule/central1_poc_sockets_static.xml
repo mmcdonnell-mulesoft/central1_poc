@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns:sockets="http://www.mulesoft.org/schema/mule/sockets" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/sockets http://www.mulesoft.org/schema/mule/sockets/current/mule-sockets.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="f264e2a2-5e7b-41fb-b710-289fb1582b56" >
+		<http:listener-connection host="0.0.0.0" port="8093" />
+	</http:listener-config>
+	<sockets:listener-config name="Sockets_Listener_config" doc:name="Sockets Listener config" doc:id="dd66cbe2-9a1a-4f0e-ac9d-2c580ae3de07" >
+		<sockets:tcp-listener-connection host="localhost" port="10001" />
+	</sockets:listener-config>
+	<sockets:request-config name="Sockets_Request_config" doc:name="Sockets Request config" doc:id="e0a8ac3c-8d1d-45e6-8d48-fc9c7f5d5217" >
+		<sockets:tcp-requester-connection host="localhost" port="10001" />
+	</sockets:request-config>
+	<file:config name="File_Config" doc:name="File Config" doc:id="6a71a5e2-331b-49e9-b770-d6e8e7fc125e" />
+	<file:config name="File_Config1" doc:name="File Config" doc:id="be366b32-19d9-46bd-87e0-a057410bb271" />
+	<flow name="central1_poc_socketsFlow1" doc:id="46b21a36-1a7f-48ab-bd1f-68d459ad5708" >
+		<http:listener doc:name="Listener" doc:id="83af655b-7563-41af-97a8-bbf8423cc243" path="/test_sockets_static" config-ref="HTTP_Listener_config"/>
+		<file:read doc:name="Read" doc:id="05eda1e6-fa80-4081-b566-bc11838b4362" path="/Users/bbaloi/AnypointStudio/studio-workspace-7.5-generic/central1_poc/src/main/resources/examples/sockets_request.txt"/>
+		<ee:transform doc:name="Transform Message" doc:id="1485c5aa-80c0-4cf6-bcac-61aac66ef037">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/flatfile schemaPath = "bill_pmt_tx.ffd"
+---
+[{
+	PHONE_LINE: "12",
+	AQUIRER: "111",
+	MESSAGE_TYPE: "35",
+	MESSAGE_ID: "A2345678901Z",
+	MEMBER_NUMBER: "33333333",
+	MEMBER_BRANCH: "99",
+	FROM_ACCT_TYPE: "0",
+	SUB_ACCOUT: "000",
+	BILLER_NUM: "999999999",
+	TRANSFER_AMMT: "003456789",
+	REQUEST_DATE: "010120",
+	ACCOUNT: "xxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+	EFFECTIVE_DATE: "020220",
+	EXPIRY_DATE: "090920",
+	FREQUENCY: "001",
+	PERIOD: "0",
+	LAST_NAME: "BBBBBBBBBBBBBBBBBBBBBBBBB",
+	FIRST_NAME: "AAAAAAAAAAAAAAAAAAAAAAAAA",
+	PROVINCE_CODE: "   ON",
+	TRANSIT: "123ab",
+	FILLER: "XX"
+	
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<sockets:send-and-receive doc:name="Send and receive" doc:id="a7378b8b-969a-4e9c-bbc3-0e1d3147e0df" config-ref="Sockets_Request_config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="42e0aa4c-ea95-4c04-81c2-39f32013fe1b" message="RESPONSE: #[payload]"/>
+	</flow>
+	<flow name="central1_poc_socketsFlow" doc:id="8569f10d-aa32-4270-9d30-aea1f617f76c" >
+		<sockets:listener doc:name="Listener" doc:id="9d15817c-a388-4337-ba3c-a93ea4ca8441" config-ref="Sockets_Listener_config"/>
+		<logger level="INFO" doc:name="Logger" doc:id="1f7514e5-eeca-4626-a493-085722570fce" message="REQUEST: #[payload]"/>
+		<file:write doc:name="Write" doc:id="c7175b51-006b-4559-b472-526974669f23" path="/Users/bbaloi/AnypointStudio/studio-workspace-7.5-generic/central1_poc/src/main/resources/data_out/sockets_out.txt"/>
+		<ee:transform doc:name="Transform Message" doc:id="5843e865-6815-4b2b-8913-99f77155c3ac" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/flatfile schemaPath = "bill_pmt_reply.ffd" , segmentIdent = "bill_pmt_reply"
+---
+[{
+	PHONE_LINE: "12",
+	AQUIRER: "333",
+	MESSAGE_TYPE: "35",
+	MESSAGE_ID: "A2345678901Z",
+	RESPONSE_CODE: "00",
+	TRACE_NUM: "010001",
+	PROVINCE_CODE: "   ON",
+	TRANSIT: "79",
+	FILLER: "11"
+}]]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+</mule>

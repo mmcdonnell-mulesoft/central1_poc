@@ -1,0 +1,13 @@
+form: FIXEDWIDTH
+id: 'bill_pmt_reply'
+name: 'bill_pmt_reply'
+values: 
+- { name: 'PHONE_LINE', usage: M, type: String, length: 2 }
+- { name: 'AQUIRER', usage: M, type: String, length: 3 }
+- { name: 'MESSAGE_TYPE', usage: M, type: String, length: 2 }
+- { name: 'MESSAGE_ID', usage: M, type: String, length: 12 }
+- { name: 'RESPONSE_CODE', usage: M, type: String, length: 2 }
+- { name: 'TRACE_NUM', usage: M, type: String, length: 6 }
+- { name: 'PROVINCE_CODE', usage: M, type: String, length: 5 }
+- { name: 'TRANSIT', usage: M, type: String, length: 5 }
+- { name: 'FILLER', usage: M, type: String, length: 2 }

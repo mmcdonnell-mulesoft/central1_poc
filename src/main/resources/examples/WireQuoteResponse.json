@@ -1,0 +1,182 @@
+{
+   "referenceNo":"3821507",
+   "sendingAmount":{
+      "amount":60.0000,
+      "currency":{
+         "code":"EUR",
+         "name":"Euro",
+         "usesDecimals":true
+      }
+   },
+   "senderToReceiverInformationDetails":{
+      
+   },
+   "lastModifiedBy":"080912010PSDOperator3",
+   "lastModifiedAt":1601051118253,
+   "wireTypeDetails":{
+      "RegularWireDetails":{
+         "directionDetails":{
+            "OutgoingWire":{
+               "wireTransferStatus":"PENDING",
+               "createdBy":"080912010PSDOperator3",
+               "createdAt":1601051118253,
+               "outgoingUserActions":[
+                  "VIEW_PERSONAL_DETAILS"
+               ],
+               "basicFromCreditUnion":{
+                  "transitNo":"080912010",
+                  "name":"Central 1 Credit Union",
+                  "basicAddress":{
+                     "line1":"1441 Creekside Drive",
+                     "line2":"Vancouver,BC,V6J 4S7",
+                     "line3":"Canada"
+                  }
+               },
+               "basicToFinancialInstitution":{
+                  "routingCode":"BBVAFRPPXXX",
+                  "name":"BANCO BILBAO VIZCAYA ARGENTARIA",
+                  "basicAddress":{
+                     "line1":"29 AVENUE DE L'OPERA",
+                     "line2":"PARIS,75001",
+                     "line3":"France"
+                  }
+               },
+               "wholesaleFinancialDetails":{
+                  "amount":98.18,
+                  "currency":{
+                     "code":"CAD",
+                     "name":"Canadian Dollar",
+                     "usesDecimals":true
+                  },
+                  "fee":7.00,
+                  "rate":1.63638280,
+                  "totalAmount":105.18
+               },
+               "financialDetails":{
+                  "amount":98.18,
+                  "currency":{
+                     "code":"CAD",
+                     "name":"Canadian Dollar",
+                     "usesDecimals":true
+                  },
+                  "fee":0.00,
+                  "rate":1.63638280,
+                  "totalAmount":98.18
+               },
+               "outboundRegulatoryDetails":{
+                  "fundingMethod":"CHEQUING_ACCOUNT",
+                  "transactionFaceToFace":true
+               },
+               "privateSenderDetails":{
+                  "memberNumber":null,
+                  "privateEntity":{
+                     "Person":{
+                        "accountNumber":"123",
+                        "address":{
+                           "street":"2360 W13th ave",
+                           "city":"Vancouver",
+                           "mailingCode":"B5F1N4",
+                           "country":{
+                              "name":"Canada",
+                              "isoCode":"CA"
+                           },
+                           "region":{
+                              "code":"BC",
+                              "name":"British Columbia"
+                           }
+                        },
+                        "fullName":"Ted Schmidt",
+                        "entityType":"PERSON",
+                        "firstName":"Ted",
+                        "lastName":"Schmidt"
+                     }
+                  },
+                  "thirdPartyEntity":null,
+                  "hasThirdParty":false
+               },
+               "privateBeneficiaryDetails":{
+                  "privateEntity":{
+                     "Person":{
+                        "accountNumber":"456",
+                        "address":{
+                           "street":null,
+                           "city":null,
+                           "mailingCode":null,
+                           "country":{
+                              "name":"France",
+                              "isoCode":"FR"
+                           },
+                           "region":null
+                        },
+                        "fullName":"Matt Richard",
+                        "entityType":"PERSON",
+                        "firstName":"Matt",
+                        "lastName":"Richard"
+                     }
+                  },
+                  "thirdPartyEntity":null,
+                  "hasThirdParty":false
+               }
+            }
+         },
+         "publicSenderEntity":{
+            "Person":{
+               "accountNumber":"123",
+               "fullName":"Ted Schmidt",
+               "entityType":"PERSON",
+               "basicAddress":{
+                  "line1":"2360 W13th ave",
+                  "line2":"Vancouver",
+                  "line3":"Canada",
+                  "line4":"B5F1N4"
+               },
+               "detailedAddress":{
+                  "street":"2360 W13th ave",
+                  "city":"Vancouver",
+                  "mailingCode":"B5F1N4",
+                  "country":{
+                     "name":"Canada",
+                     "isoCode":"CA"
+                  },
+                  "region":{
+                     "code":"BC",
+                     "name":"British Columbia"
+                  }
+               },
+               "firstName":"Ted",
+               "lastName":"Schmidt"
+            }
+         },
+         "publicBeneficiaryEntity":{
+            "Person":{
+               "accountNumber":"456",
+               "fullName":"Matt Richard",
+               "entityType":"PERSON",
+               "basicAddress":{
+                  "line3":"France"
+               },
+               "detailedAddress":{
+                  "street":null,
+                  "city":null,
+                  "mailingCode":null,
+                  "country":{
+                     "name":"France",
+                     "isoCode":"FR"
+                  },
+                  "region":null
+               },
+               "firstName":"Matt",
+               "lastName":"Richard"
+            }
+         },
+         "additionalInformationDetails":{
+            
+         }
+      }
+   },
+   "wireTransferRoutingDetails":{
+      "Swift":{
+         "crossBorderStatus":"YES"
+      }
+   }
+}

@@ -1,0 +1,25 @@
+form: FIXEDWIDTH
+id: 'bill_pmt_tx'
+name: 'bill_pmt_tx'
+values: 
+- { name: 'PHONE_LINE', usage: M, type: String, length: 2 }
+- { name: 'AQUIRER', usage: M, type: String, length: 3 }
+- { name: 'MESSAGE_TYPE', usage: M, type: String, length: 2 }
+- { name: 'MESSAGE_ID', usage: M, type: String, length: 12 }
+- { name: 'MEMBER_NUMBER', usage: M, type: String, length: 8 }
+- { name: 'MEMBER_BRANCH', usage: M, type: String, length: 2 }
+- { name: 'FROM_ACCT_TYPE', usage: M, type: String, length: 1 }
+- { name: 'SUB_ACCOUT', usage: M, type: String, length: 3 }
+- { name: 'BILLER_NUM', usage: M, type: String, length: 9 }
+- { name: 'TRANSFER_AMMT', usage: M, type: String, length: 9 }
+- { name: 'REQUEST_DATE', usage: M, type: String, length: 6 }
+- { name: 'ACCOUNT', usage: M, type: String, length: 30 }
+- { name: 'EFFECTIVE_DATE', usage: M, type: String, length: 6 }
+- { name: 'EXPIRY_DATE', usage: M, type: String, length: 6 }
+- { name: 'FREQUENCY', usage: M, type: String, length: 3 }
+- { name: 'PERIOD', usage: M, type: String, length: 1 }
+- { name: 'LAST_NAME', usage: M, type: String, length: 25 }
+- { name: 'FIRST_NAME', usage: M, type: String, length: 25 }
+- { name: 'PROVINCE_CODE', usage: M, type: String, length: 5 }
+- { name: 'TRANSIT', usage: M, type: String, length: 5 }
+- { name: 'FILLER', usage: M, type: String, length: 2 }

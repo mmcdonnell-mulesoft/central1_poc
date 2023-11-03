@@ -1,0 +1,25 @@
+[
+  {
+    "phone_line": "99",
+    "aquirer": "687",
+    "message_type": "35",
+    "message_id": "054363741601",
+    "member_number": "00225233",
+    "member_branch": "01",
+    "from_acct_type": "0",
+    "sub_acct": "000",
+    "biller_num": "000001586",
+    "transfer_ammt": "000000010",
+    "request_date": "080919",
+    "acct": "                      67413055",
+    "effective_date": "080919",
+    "expiry_date": "080919",
+    "freq": "001",
+    "period": "O",
+    "last_name": "                     AAAA",
+    "first_name": "                    BBBBB",
+    "province_code": "BB000",
+    "transit": "0100C",
+    "filler": "CC"
+  }
+]
